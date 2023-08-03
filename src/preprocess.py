@@ -23,7 +23,13 @@ def extract_floor(floor_info: str) -> int:
     Args:
         floor_info (str): 층수 정보
     """
-    # TODO
+    floor = floor_info.split("out of")[0].strip()
+    if floor.isnumeric():
+        floor = int(floor)
+    else:
+        floor = 0
+
+    return floor
 
 
 def floor_extractor(df: pd.DataFrame, col: str) -> pd.DataFrame:
@@ -54,6 +60,8 @@ preprocess_pipeline = ColumnTransformer(
             FunctionTransformer(floor_extractor, kw_args={"col": "floor"}),
             ["floor"],
         ),
+        ("sqrt_floor", FunctionTransformer(lambda x: x**0.5), ["floor"]),
+        ("target_enconder", TargetEncoder(), CAT_FEATURES)
         # TODO,
     ],
     remainder="passthrough",
